@@ -44,7 +44,7 @@ def lookup(addr, f = None):
         url += "?fields=" + ",".join(f)
         
     try:
-        resp = request.urlopen(url)
+        resp = request.urlopen(url, timeout=5)
     except:
         print("Error occurred while accessing API")
         return None 
@@ -52,29 +52,30 @@ def lookup(addr, f = None):
     # resp.read() returns bytes object, json.loads() returns a dict
     data = json.loads(resp.read())
 
-    print(resp.getheader("X-Rl")) #driver
+    #print(resp.getheader("X-Rl")) #driver
 
     return data
 
 def multi_lookup(addr_list, f = None):
     import time
-    import math
+    from math import ceil
 
     def reset_time():
-        return math.floor(time.time())
+        #return math.floor(time.time())
+        return time.time()
 
     data = []
     ti = reset_time()
 
     for i in range(len(addr_list)):
-        te = math.ceil(time.time()) - ti
-        print("i =", i, "te =", te) #driver
+        #te = math.ceil(time.time()) - ti
+        te = time.time() - ti
+        #print("i =", i, "te =", te) #driver
         if te <= 60 and i > 0 and i%150 == 0:
-            print("sleeping", 60 - te, "sec") #driver
-            time.sleep(60 - te)
+            #print("sleeping", 61 - ceil(te), "sec") #driver
+            time.sleep(61 - ceil(te))
             ti = reset_time()
         data.append(lookup(addr_list[i], f))
-
 
     return data
 
