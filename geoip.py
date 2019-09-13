@@ -80,7 +80,7 @@ class Lookup:
         self._elapsed()
         if self._te < 60  and self._count > 150:
             #driver
-            print("te=", self._te, "sleeping", 61 - ceil(self._te), "sec")
+            #print("te=", self._te, "sleeping", 61 - ceil(self._te), "sec")
 
             sleep(61 - ceil(self._te))
             self._elapsed()
@@ -89,7 +89,17 @@ class Lookup:
             self._count = 1
 
     def lookup(self, addr, f=None):
-        """Usage: <Lookup_obj>.lookup(addr, [fields]""" #TODO revise
+        """lookup() Usage: <Lookup_obj>.lookup(addr, [f])
+
+        Returns a dict containing the geoIP info for given address.
+
+        Parameters:
+        addr: a list of strings containing IP addresses or hostnames
+        f: Optional. a list of strings containing field names to include
+           in lookup.  See fields list for valid fields.  If this is
+           omitted, the request will have no fields specified, so the 
+           API will return the default fields.
+        """
 
         # TODO check for addr type, maybe add exception
         if isinstance(addr, list):
@@ -105,7 +115,7 @@ class Lookup:
                 self._reset_time()
             else:
                 self._check_timing()
-            print("count =", self._count, "te =", self._te) #driver
+            #print("count =", self._count, "te =", self._te) #driver
 
             try:
                 resp = request.urlopen(url, timeout=5)
@@ -115,18 +125,29 @@ class Lookup:
 
             #resp.read() returns bytes object, json.loads() returns a dict
             data = json.loads(resp.read())
-            rl = int(resp.getheader("X-Rl")) #driver
-            print(rl) #driver
+            #rl = int(resp.getheader("X-Rl")) #driver
+            #print(rl) #driver
 
             self._count += 1
 
             return data
 
     def multi_lookup(self, addr_list, f=None):
-        """Usage: <Lookup_obj>.multi_lookup(addr[], [fields]) """ #TODO
+        """multi_lookup() Usage: <Lookup_obj>.multi_lookup(addr_list, [f])
+
+        Returns a list of dicts containing the geoIP info for each address
+        in addr_list.
+
+        Parameters:
+        addr_list: a list of strings containing IP addresses or hostnames
+        f: Optional. a list of strings containing field names to include
+           in lookup.  See fields list for valid fields.  If this is
+           omitted, the request will have no fields specified, so the 
+           API will return the default fields.
+        """
         data = []
         for i in range(len(addr_list)):
-            sleep(0.065) #testing
+            #sleep(0.065) #for testing
             data.append(self.lookup(addr_list[i], f))
 
         return data
