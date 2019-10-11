@@ -82,9 +82,9 @@ class Lookup:
         self._elapsed()
         if self._te < 60  and self._count > max_per_min:
             #driver
-            #print("te=", self._te, "sleeping", 61 - ceil(self._te), "sec")
+            #print("te=", self._te, "sleeping", 62-ceil(self._te), "sec")
 
-            sleep(61 - ceil(self._te))
+            sleep(62 - ceil(self._te))#sleep extra second
             self._elapsed()
         if self._te > 60:
             self._reset_time()
@@ -127,8 +127,9 @@ class Lookup:
 
             #resp.read() returns bytes object, json.loads() returns a dict
             data = json.loads(resp.read())
-            #rl = int(resp.getheader("X-Rl")) #driver
-            #print(rl) #driver
+            #XRl = int(resp.getheader("X-Rl"))   # driver
+            #XTtl = int(resp.getheader("X-Ttl")) # driver
+            #print("Rl:", XRl, "Ttl:", XTtl)     # driver
 
             self._count += 1
 
