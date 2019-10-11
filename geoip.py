@@ -3,9 +3,10 @@
 Using the JSON API from www.ip-api.com, retrieve geographic IP
 information for a given IP address or hostname. This service does not
 require the user to sign-up or provide an API key, as long as the user
-does not exceed 150 requests per minute. Using the methods provided in
-the geoip.Lookup class, the user need not worry about the timing
-restrictions imposed by the API service.
+does not exceed a maximum number of requests per minute, as specified on
+their website. Using the methods provided in the geoip.Lookup class, the
+user need not worry about the timing restrictions imposed by the API
+service.
 
 Classes provided by module:
 Lookup
@@ -24,6 +25,7 @@ from time import time, sleep
 from urllib import request
 import json
 
+max_per_min = 45 # specified on website
 
 class Lookup:
     """Lookup class
@@ -78,7 +80,7 @@ class Lookup:
 
     def _check_timing(self):
         self._elapsed()
-        if self._te < 60  and self._count > 150:
+        if self._te < 60  and self._count > max_per_min:
             #driver
             #print("te=", self._te, "sleeping", 61 - ceil(self._te), "sec")
 
