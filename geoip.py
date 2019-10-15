@@ -80,11 +80,16 @@ class Lookup:
 
     def _check_timing(self):
         self._elapsed()
-        if self._te < 60  and self._count > max_per_min:
-            #driver
-            #print("te=", self._te, "sleeping", 62-ceil(self._te), "sec")
-
-            sleep(62 - ceil(self._te))#sleep extra second
+        try: # try to use header vals returned
+            if self._XRl == 0:
+                #print("sleeping", 2 + self._XTtl, "<headers>") # driver
+                sleep(2 + self._XTtl) # sleep extra 2 seconds
+        except: # if headers can't be used, fall back on timer/counter
+            if self._te < 60  and self._count > max_per_min:
+                #print("te=", self._te) # driver
+                #print("sleeping", 62-ceil(self._te), "<timer>") # driver
+                sleep(62 - ceil(self._te)) # sleep extra second
+        finally:
             self._elapsed()
         if self._te > 60:
             self._reset_time()
@@ -122,14 +127,17 @@ class Lookup:
             try:
                 resp = request.urlopen(url, timeout=5)
             except:
-                print("Error occurred while accessing API")
+                #print("Error occurred while accessing API") # driver
                 return None
 
             #resp.read() returns bytes object, json.loads() returns a dict
             data = json.loads(resp.read())
-            #XRl = int(resp.getheader("X-Rl"))   # driver
-            #XTtl = int(resp.getheader("X-Ttl")) # driver
-            #print("Rl:", XRl, "Ttl:", XTtl)     # driver
+            try:
+                self._XRl = int(resp.getheader("X-Rl"))
+                self._XTtl = int(resp.getheader("X-Ttl"))
+            except:
+                self._XRl, self._XTtl = None, None
+            #print("Rl:", self._XRl, "Ttl:", self._XTtl) # driver
 
             self._count += 1
 
